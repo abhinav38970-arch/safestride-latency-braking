@@ -1,0 +1,10 @@
+Explanantion of graph in Google Slides Presentation: 
+
+
+The provided scatter plot illustrates the results of 300 physical trials testing how microcontroller execution loop latency affects a vehicle stopping distance across three different motor speeds. The horizontal axis represents the processing delay in milliseconds, ranging from zero to two hundred, while the vertical axis shows the remaining stopping distance in inches. Any value below zero on this axis indicates a physical collision with the obstacle.
+
+The data reveals a clear and dangerous pattern. As loop latency increases, the available stopping distance decreases in a straight line. However, the severity of this drop depends entirely on the vehicle speed. For the slow speed tier at 130 PWM, shown by the blue dots, the vehicle maintains a safe positive stopping distance across all tested delays. In contrast, the medium speed tier at 190 PWM, represented by red dots, crosses into the negative collision zone when the delay reaches approximately 75 to 100 milliseconds.
+
+The most critical finding is in the fast speed tier at 250 PWM, shown by the yellow dots. At this top speed, even a minor processor delay of 50 milliseconds results in a complete collision. As the delay approaches 200 milliseconds, the vehicle impacts the wall with over six inches of negative stopping distance.
+
+This pattern matters because it empirically proves the physics equation where blind travel distance equals velocity multiplied by time delay. It shows that static braking thresholds are dangerous for fast vehicles. Because processors naturally experience execution lag when handling multiple sensors, safety software must dynamically adjust the braking trigger distance to prevent high speed collisions.
