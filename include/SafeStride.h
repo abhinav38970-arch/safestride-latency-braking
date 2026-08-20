@@ -1,3 +1,5 @@
+// This file defines the core SafeStride math used to compare baseline braking and latency-aware braking.
+// The formulas here are the source of truth for threshold expansion and trial margin reporting.
 #ifndef SAFESTRIDE_H
 #define SAFESTRIDE_H
 
@@ -5,19 +7,15 @@
 
 class SafeStride {
 private:
-    float baseThreshold; // Base mechanical stopping distance (inches)
+    float baseStoppingDistanceMm;
 
 public:
-    SafeStride(float baseStoppingDist);
+    explicit SafeStride(float baseStoppingDistanceMm);
 
-    // Calculates unbraked distance covered during processor lag: d_lag = v * tau
-    float calculateBlindDistance(float velocity, float loopLatencySec);
-
-    // Dynamically expands the braking distance threshold
-    float getExpandedThreshold(float velocity, float loopLatencySec);
-
-    // Evaluates current obstacle distance against expanded safety buffer
-    bool checkCollisionRisk(float currentDistance, float velocity, float loopLatencySec);
+    float getBaselineThresholdMm() const;
+    float calculateBlindDistanceMm(float velocityMmPerSec, uint16_t latencyMs) const;
+    float getSafeStrideThresholdMm(float velocityMmPerSec, uint16_t latencyMs) const;
+    float estimateRemainingMarginMm(float measuredDistanceMm, float velocityMmPerSec, uint16_t latencyMs) const;
 };
 
-#endif // SAFESTRIDE_H
+#endif

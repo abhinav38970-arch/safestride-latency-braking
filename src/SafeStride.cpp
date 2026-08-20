@@ -1,22 +1,22 @@
+// This file implements the SafeStride equations that account for blind travel during processing latency.
+// It is intentionally small so trial-control code can stay readable and easy to verify.
 #include "SafeStride.h"
 
-SafeStride::SafeStride(float baseStoppingDist) {
-    baseThreshold = baseStoppingDist;
+SafeStride::SafeStride(float baseStoppingDistanceMm)
+    : baseStoppingDistanceMm(baseStoppingDistanceMm) {}
+
+float SafeStride::getBaselineThresholdMm() const {
+    return baseStoppingDistanceMm;
 }
 
-// d_lag = v * tau
-float SafeStride::calculateBlindDistance(float velocity, float loopLatencySec) {
-    return velocity * loopLatencySec;
+float SafeStride::calculateBlindDistanceMm(float velocityMmPerSec, uint16_t latencyMs) const {
+    return velocityMmPerSec * (static_cast<float>(latencyMs) / 1000.0f);
 }
 
-// Dynamic Expansion: Total Threshold = Base Braking Distance + Blind Travel Distance
-float SafeStride::getExpandedThreshold(float velocity, float loopLatencySec) {
-    float blindDistance = calculateBlindDistance(velocity, loopLatencySec);
-    return baseThreshold + blindDistance;
+float SafeStride::getSafeStrideThresholdMm(float velocityMmPerSec, uint16_t latencyMs) const {
+    return baseStoppingDistanceMm + calculateBlindDistanceMm(velocityMmPerSec, latencyMs);
 }
 
-// Emergency brake trigger decision
-bool SafeStride::checkCollisionRisk(float currentDistance, float velocity, float loopLatencySec) {
-    float safeDistance = getExpandedThreshold(velocity, loopLatencySec);
-    return (currentDistance <= safeDistance);
+float SafeStride::estimateRemainingMarginMm(float measuredDistanceMm, float velocityMmPerSec, uint16_t latencyMs) const {
+    return measuredDistanceMm - getSafeStrideThresholdMm(velocityMmPerSec, latencyMs);
 }
