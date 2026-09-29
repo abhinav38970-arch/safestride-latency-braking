@@ -5,18 +5,18 @@
 
 class SafeStride {
 private:
-    float baseThreshold; // Base mechanical stopping distance (inches)
+    float baseThreshold; // Base trigger distance, D_base (meters)
 
 public:
-    SafeStride(float baseStoppingDist);
+    SafeStride(float baseStoppingDistM);
 
-    // Calculates unbraked distance covered during processor lag: d_lag = v * tau
+    // Calculates unbraked distance covered during loop latency: d_lag = v0 * tau
     float calculateBlindDistance(float velocity, float loopLatencySec);
 
-    // Dynamically expands the braking distance threshold
+    // Dynamically expands the braking trigger: D_safe = D_base + v0 * tau
     float getExpandedThreshold(float velocity, float loopLatencySec);
 
-    // Evaluates current obstacle distance against expanded safety buffer
+    // Evaluates current obstacle distance against the expanded safety buffer
     bool checkCollisionRisk(float currentDistance, float velocity, float loopLatencySec);
 };
 
