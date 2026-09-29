@@ -2,20 +2,29 @@
 #define CONFIG_H
 
 // --- Hardware Pin Definitions (ESP32) ---
-#define TRIG_PIN       5    // Ultrasonic Trigger
-#define ECHO_PIN       18   // Ultrasonic Echo
-#define MOTOR_PWM_PIN  25   // Motor Speed Control
-#define BRAKE_PIN      26   // Physical Brake Relay / Signal
+// VL53L1X time-of-flight distance sensor on I2C
+#define TOF_SDA_PIN   21   // ESP32 default I2C SDA
+#define TOF_SCL_PIN   22   // ESP32 default I2C SCL
+// Drive hardware
+#define MOTOR_PWM_PIN 25   // Motor speed control (L298N-class driver)
+#define BRAKE_PIN     26   // Physical brake relay / signal
 
-// --- Baseline Physical Parameters ---
-// Static braking distance required at rest / minimal speed (inches)
-const float BASE_STOPPING_DISTANCE_IN = 2.0; 
+// --- SafeStride Parameters (SI units) ---
+// Base trigger distance: the fixed-distance threshold used by the Baseline
+// controller, in meters. SafeStride expands this by the latency-distance term.
+const float D_BASE_M = 0.15;
 
-// Conversion factor: Maps PWM motor output (0-255) to physical velocity (inches/sec)
-// Example: PWM 250 ~ 20.0 inches/sec on testing rig
-const float PWM_TO_VELOCITY_SCALE = 0.08; 
+// Nominal forward velocities per commanded PWM setting (m/s).
+// Firmware setpoints used by the latency-distance term; these were not
+// independently calibrated against measured physical speed.
+const float V0_PWM130_MS = 0.65;
+const float V0_PWM190_MS = 0.90;
+const float V0_PWM250_MS = 1.25;
 
-// Sensor timeout limits (microseconds)
-const unsigned long SENSOR_TIMEOUT_US = 30000;
+// --- Tested Conditions (600-trial experiment) ---
+// Commanded PWM speed settings
+const int PWM_SETTINGS[3] = {130, 190, 250};
+// Injected software loop delays (ms)
+const int INJECTED_LATENCY_MS[5] = {10, 50, 100, 150, 200};
 
 #endif // CONFIG_H
